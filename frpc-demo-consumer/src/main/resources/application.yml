@@ -1,0 +1,12 @@
+server:
+  port: 8081
+
+zookeeper: 127.0.0.1:2181
+
+frpc:
+  application:
+    name: mall-comsumer
+  registry:
+    address: zookeeper://${zookeeper}
+  consumer:
+    proxy: byteBuddy
