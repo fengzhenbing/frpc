@@ -11,5 +11,12 @@ import java.io.IOException;
  * @author fengzhenbing
  */
 public interface NetClient {
+    /**
+     * 发送请求
+     *
+     * @param req
+     * @return
+     * @throws IOException
+     */
     FrpcResponse sendRequest(FrpcRequest req) throws IOException;
 }

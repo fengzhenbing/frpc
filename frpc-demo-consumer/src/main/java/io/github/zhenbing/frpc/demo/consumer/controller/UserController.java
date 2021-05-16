@@ -21,7 +21,13 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/{id}")
-    public User findUser(@PathVariable("id") Integer id){
+    public User findUser(@PathVariable("id") Integer id) {
         return userService.findById(id);
+    }
+
+    @GetMapping("/save/{name}")
+    public String saveUser(@PathVariable("name") String name) {
+        userService.save(name);
+        return "ok";
     }
 }

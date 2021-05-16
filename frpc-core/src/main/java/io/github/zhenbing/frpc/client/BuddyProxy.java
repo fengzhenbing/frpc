@@ -9,30 +9,34 @@ import okhttp3.MediaType;
 import io.github.zhenbing.frpc.api.Filter;
 import io.github.zhenbing.frpc.api.FrpcRequest;
 import io.github.zhenbing.frpc.api.ServiceProviderDesc;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.OrderComparator;
+import org.springframework.core.Ordered;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 /**
  * BuddyProxy
  *
  * @author fengzhenbing
  */
-public class BuddyProxy implements FrpcProxy{
+public class BuddyProxy implements FrpcProxy {
 
     private static final NetClient defaultNetClient = new OkHttpClient();
 
     @Override
-    public <T> T create(Class<T> serviceClass, ServiceProviderDesc serviceProviderDesc, Filter... filters) {
+    public <T> T create(final ApplicationContext applicationContext, Class<T> serviceClass) {
         try {
             return (T) new ByteBuddy().subclass(Object.class)
                     .implement(serviceClass)
                     .method(ElementMatchers.isDeclaredBy(serviceClass))
-                    .intercept(InvocationHandlerAdapter.of(new BuddyInvocationHandler(serviceClass,serviceProviderDesc, filters)))
+                    .intercept(InvocationHandlerAdapter.of(new BuddyInvocationHandler(applicationContext, serviceClass)))
                     .make()
                     .load(getClass().getClassLoader())
                     .getLoaded()
-                     .newInstance();
+                    .newInstance();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -42,18 +46,14 @@ public class BuddyProxy implements FrpcProxy{
         return null;
     }
 
-    public static class BuddyInvocationHandler  implements InvocationHandler {
-
-        public static final MediaType JSONTYPE = MediaType.get("application/json; charset=utf-8");
+    public static class BuddyInvocationHandler implements InvocationHandler {
 
         private final Class<?> serviceClass;
-        private final ServiceProviderDesc serviceProviderDesc;
-        private final Filter[] filters;
+        private final ApplicationContext applicationContext;
 
-        public <T> BuddyInvocationHandler(Class<T> serviceClass, ServiceProviderDesc serviceProviderDesc, Filter... filters) {
+        public <T> BuddyInvocationHandler(ApplicationContext applicationContext, Class<T> serviceClass) {
             this.serviceClass = serviceClass;
-            this.serviceProviderDesc = serviceProviderDesc;
-            this.filters = filters;
+            this.applicationContext = applicationContext;
         }
 
         // 可以尝试，自己去写对象序列化，二进制还是文本的，，，frpc是xml自定义序列化、反序列化，json: code.google.com/p/frpc
@@ -65,15 +65,15 @@ public class BuddyProxy implements FrpcProxy{
 
             // 加filter地方之二
             // mock == true, new Student("hubao");
+            ServiceProviderDesc serviceProviderDesc = Frpc.getServiceProviderDesc(applicationContext, serviceClass);
 
-            FrpcRequest request = new FrpcRequest();
-            request.setServiceInterfaceClass(this.serviceClass.getName());
-            request.setServiceImplClass(serviceProviderDesc.getServiceImplClass());
-            request.setMethod(method.getName());
-            request.setParams(params);
-            request.setUrl(serviceProviderDesc.httpUrl());
+            FrpcRequest request = Frpc.buildFrpcRequest(serviceClass, method, params, serviceProviderDesc);
 
-            if (null!=filters) {
+            Filter[] filters = Frpc.getFilters(applicationContext);
+            if (null != filters) {
+                //sort
+                OrderComparator.sort(filters);
+
                 for (Filter filter : filters) {
                     if (!filter.filter(request)) {
                         return null;
@@ -90,7 +90,7 @@ public class BuddyProxy implements FrpcProxy{
             // 这里判断response.status，处理异常
             // 考虑封装一个全局的FrpcException
 
-            return JSON.parse(response.getResult().toString());
+            return JSON.parseObject(response.getResult().toString(), method.getReturnType());
         }
 
 

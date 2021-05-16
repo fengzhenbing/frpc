@@ -8,7 +8,7 @@ import lombok.Data;
  * @author fengzhenbing
  */
 @Data
-public class ProviderConfig  extends AbstractConfig{
+public class ProviderConfig extends AbstractConfig {
     public static final String PREFIX = "provider";
     /**
      * Service ip addresses (used when there are multiple network cards available)

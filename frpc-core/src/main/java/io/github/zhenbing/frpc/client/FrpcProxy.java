@@ -2,6 +2,7 @@ package io.github.zhenbing.frpc.client;
 
 import io.github.zhenbing.frpc.api.Filter;
 import io.github.zhenbing.frpc.api.ServiceProviderDesc;
+import org.springframework.context.ApplicationContext;
 
 /**
  * FrpcProxy
@@ -9,5 +10,14 @@ import io.github.zhenbing.frpc.api.ServiceProviderDesc;
  * @author fengzhenbing
  */
 public interface FrpcProxy {
-    <T> T create(final Class<T> serviceClass, final ServiceProviderDesc serviceProviderDesc, final Filter... filters);
+    /**
+     * 代理
+     *
+     * @param serviceClass
+     * @param serviceProviderDesc
+     * @param filters
+     * @param <T>
+     * @return
+     */
+    <T> T create(ApplicationContext applicationContext, final Class<T> serviceClass);
 }

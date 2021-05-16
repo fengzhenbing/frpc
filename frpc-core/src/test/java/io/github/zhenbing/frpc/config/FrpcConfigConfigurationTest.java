@@ -15,10 +15,10 @@ import static org.hamcrest.Matchers.is;
 public class FrpcConfigConfigurationTest extends AbstractConfigurationTest {
 
     @Test
-    public void testFrpcConfigConfiguration(){
+    public void testFrpcConfigConfiguration() {
         final String name = "frpc-provider";
         final String[] inlinedProperties = new String[]{
-            "frpc.application.name=" + name,
+                "frpc.application.name=" + name,
         };
         load(FrpcConfigConfiguration.class, inlinedProperties);
         ApplicationConfig properties = getContext().getBean(ApplicationConfig.class);

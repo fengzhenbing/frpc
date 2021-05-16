@@ -19,7 +19,7 @@ import java.util.Arrays;
 public class FrpcInvoker {
     private FrpcResolver resolver;
 
-    public FrpcInvoker(FrpcResolver resolver){
+    public FrpcInvoker(FrpcResolver resolver) {
         this.resolver = resolver;
     }
 
@@ -36,10 +36,11 @@ public class FrpcInvoker {
             // dubbo, fastjson,
             Object result = method.invoke(service, request.getParams());
             // 两次json序列化能否合并成一个
-            response.setResult(JSON.toJSONString(result, SerializerFeature.WriteClassName));
+            // response.setResult(JSON.toJSONString(result, SerializerFeature.WriteClassName));
+            response.setResult(JSON.toJSONString(result));
             response.setStatus(true);
             return response;
-        } catch ( IllegalAccessException | InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
 
             // 3.Xstream
 

@@ -54,24 +54,24 @@ public abstract class AbstractConfig implements Serializable {
         //todo
     }
 
-    public String getFullConfigPrefix(){
+    public String getFullConfigPrefix() {
         return FRPC + "." + getConfigPrefix();
     }
 
     public abstract String getConfigPrefix();
 
-    public void bindProperties(AbstractConfig frpcConfig, Map<String, Object> properties){
-        if(CollectionUtils.isEmpty(properties)){
+    public void bindProperties(AbstractConfig frpcConfig, Map<String, Object> properties) {
+        if (CollectionUtils.isEmpty(properties)) {
             return;
         }
 
-        properties.entrySet().forEach((e)->{
-            setField(frpcConfig,e.getKey(),e.getValue());
+        properties.entrySet().forEach((e) -> {
+            setField(frpcConfig, e.getKey(), e.getValue());
         });
 
     }
 
-    private void setField( Object target,String name, Object value) {
+    private void setField(Object target, String name, Object value) {
         try {
             Field field = target.getClass().getDeclaredField(name);
             field.setAccessible(true);
@@ -81,7 +81,7 @@ public abstract class AbstractConfig implements Serializable {
             FieldAccessor fieldAccessor = ReflectionFactory.getReflectionFactory().newFieldAccessor(field, true);
             fieldAccessor.set(target, value);
         } catch (IllegalAccessException | NoSuchFieldException e) {
-            log.error("properties are not valid , target -> {}, value -> {}",target,value);
+            log.error("properties are not valid , target -> {}, value -> {}", target, value);
         }
 
     }

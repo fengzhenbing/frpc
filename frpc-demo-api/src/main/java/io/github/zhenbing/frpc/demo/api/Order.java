@@ -42,4 +42,13 @@ public class Order {
         this.amount = amount;
     }
 
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", amount=" + amount +
+                '}';
+    }
+
 }

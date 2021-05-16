@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Slf4j
 @Component
-public class RandomLoadbalance implements LoadBalancer {
+public class RandomLoadBalancer implements LoadBalancer {
     @Override
     public String select(List<String> urls) {
         int index = (int) (Math.random() * urls.size());

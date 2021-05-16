@@ -5,7 +5,6 @@ import io.github.zhenbing.frpc.api.LoadBalancer;
 import io.github.zhenbing.frpc.api.Router;
 import io.github.zhenbing.frpc.client.Frpc;
 import lombok.extern.slf4j.Slf4j;
-import io.github.zhenbing.frpc.config.ConsumerConfig;
 import io.github.zhenbing.frpc.config.RegistryConfig;
 import io.github.zhenbing.frpc.registry.RegistryClient;
 import io.github.zhenbing.frpc.registry.RegistryClientFactory;
@@ -45,13 +44,11 @@ public class ServiceDiscoverPostProcessor implements InitializingBean, Instantia
 
     private RegistryConfig registryConfig;
 
-    private ConsumerConfig consumerConfig;
-
     private final Map<String, InjectionMetadata> injectionMetadataCache = new ConcurrentHashMap<>(256);
 
     private final Set<Class<? extends Annotation>> autowiredAnnotationTypes = new LinkedHashSet<>(4);
 
-    public ServiceDiscoverPostProcessor(){
+    public ServiceDiscoverPostProcessor() {
         this.autowiredAnnotationTypes.add(Referenced.class);
     }
 
@@ -60,11 +57,9 @@ public class ServiceDiscoverPostProcessor implements InitializingBean, Instantia
         InjectionMetadata metadata = findReferencedMetadata(beanName, bean.getClass(), pvs);
         try {
             metadata.inject(bean, beanName, pvs);
-        }
-        catch (BeanCreationException ex) {
+        } catch (BeanCreationException ex) {
             throw ex;
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             throw new BeanCreationException(beanName, "Injection of Referenced dependencies failed", ex);
         }
         return pvs;
@@ -96,8 +91,8 @@ public class ServiceDiscoverPostProcessor implements InitializingBean, Instantia
         }
 
         //init registryClient
-        RegistryClient registryClient = RegistryClientFactory.getRegistryClient(registryConfig,applicationContext);
-        if(Objects.isNull(registryClient)){
+        RegistryClient registryClient = RegistryClientFactory.getRegistryClient(registryConfig, applicationContext);
+        if (Objects.isNull(registryClient)) {
             log.error("cannot find a registryClient");
             return InjectionMetadata.EMPTY;
         }
@@ -116,7 +111,7 @@ public class ServiceDiscoverPostProcessor implements InitializingBean, Instantia
                         }
                         return;
                     }
-                    currElements.add(new ReferencedFieldElement(field,registryClient));
+                    currElements.add(new ReferencedFieldElement(field));
 
                 }
             });
@@ -152,57 +147,24 @@ public class ServiceDiscoverPostProcessor implements InitializingBean, Instantia
     @Override
     public void afterPropertiesSet() throws Exception {
         registryConfig = this.applicationContext.getBean(RegistryConfig.class);
-        consumerConfig = this.applicationContext.getBean(ConsumerConfig.class);
     }
 
     /**
      * Class representing injection information about an annotated field.
      */
     private class ReferencedFieldElement extends InjectionMetadata.InjectedElement {
-        private RegistryClient registryClient;
 
-        public ReferencedFieldElement(Field field, RegistryClient registryClient) {
+        public ReferencedFieldElement(Field field) {
             super(field, null);
-            this.registryClient = registryClient;
-         }
+        }
 
 
         @Override
         protected void inject(Object bean, @Nullable String beanName, @Nullable PropertyValues pvs) throws Throwable {
             Field field = (Field) this.member;
 
-            Router router = null;
-            try {
-                router =  applicationContext.getBean(Router.class);
-            }catch (BeansException e){
-                if(log.isDebugEnabled()){
-                    log.debug(" no router configured ");
-                }
-            }
-            LoadBalancer loadBalancer = null;
-            try {
-                Object o  =  applicationContext.getBean("randomLoadbalance");
-                loadBalancer =  applicationContext.getBean(LoadBalancer.class);
-            }catch (BeansException e){
-                if(log.isDebugEnabled()){
-                    log.debug(" no loadBalancer configured ");
-                }
-            }
-            Filter[] filters = new Filter[]{};
-            try {
-                Map<String, Filter> filterMap = applicationContext.getBeansOfType(Filter.class);
-                if(!CollectionUtils.isEmpty(filterMap)){
-                   List filterList = filterMap.entrySet().stream().map(e->e.getValue()).collect(Collectors.toList());
-                   filterList.toArray(filters);
-                }
-            }catch (BeansException e){
-                if(log.isDebugEnabled()){
-                    log.debug(" no filter configured ");
-                }
-            }
-
             //todo value 缓存起来
-            Object value = Frpc.createFromRegistry(field.getType(),consumerConfig,registryClient,router,loadBalancer,filters);
+            Object value = Frpc.createFromRegistry(applicationContext, field.getType());
             if (Objects.nonNull(value)) {
                 ReflectionUtils.makeAccessible(field);
                 field.set(bean, value);

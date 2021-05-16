@@ -20,7 +20,7 @@ import static io.github.zhenbing.frpc.util.PropertySourcesUtils.getPrefixedPrope
  * @author fengzhenbing
  */
 @Slf4j
-public class FrpcConfigBindingBeanPostProcessor implements BeanPostProcessor , EnvironmentAware, PriorityOrdered {
+public class FrpcConfigBindingBeanPostProcessor implements BeanPostProcessor, EnvironmentAware, PriorityOrdered {
 
     private ConfigurableEnvironment environment;
 
@@ -29,9 +29,9 @@ public class FrpcConfigBindingBeanPostProcessor implements BeanPostProcessor , E
         if (bean instanceof AbstractConfig) {
             AbstractConfig frpcConfig = (AbstractConfig) bean;
             Map<String, Object> properties = getPrefixedProperties(environment.getPropertySources(), frpcConfig.getFullConfigPrefix());
-            frpcConfig.bindProperties(frpcConfig,properties);
-            if(log.isDebugEnabled()){
-                log.debug("config -> {}",frpcConfig);
+            frpcConfig.bindProperties(frpcConfig, properties);
+            if (log.isDebugEnabled()) {
+                log.debug("config -> {}", frpcConfig);
             }
         }
         return bean;

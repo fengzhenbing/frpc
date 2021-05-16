@@ -16,5 +16,5 @@ public class FrpcRequest {
     private String method;
     private Object[] params;
     private String url;
-    private Map<String,String> headers = new LinkedHashMap();
+    private Map<String, String> headers = new LinkedHashMap();
 }

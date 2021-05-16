@@ -60,7 +60,8 @@ public class PropertySourcesUtils {
                 for (String name : ((EnumerablePropertySource<?>) source).getPropertyNames()) {
                     if (!prefixedProperties.containsKey(name) && name.startsWith(normalizedPrefix)) {
                         String subName = name.substring(normalizedPrefix.length());
-                        if (!prefixedProperties.containsKey(subName)) { // take first one
+                        // take first one
+                        if (!prefixedProperties.containsKey(subName)) {
                             Object value = source.getProperty(name);
                             if (value instanceof String) {
                                 // Resolve placeholder

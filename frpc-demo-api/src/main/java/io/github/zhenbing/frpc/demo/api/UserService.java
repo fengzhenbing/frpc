@@ -7,4 +7,6 @@ package io.github.zhenbing.frpc.demo.api;
  */
 public interface UserService {
     User findById(Integer id);
+
+    void save(String name);
 }

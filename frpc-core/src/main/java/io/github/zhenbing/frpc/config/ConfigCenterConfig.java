@@ -8,7 +8,7 @@ import lombok.Data;
  * @author fengzhenbing
  */
 @Data
-public class ConfigCenterConfig extends AbstractConfig{
+public class ConfigCenterConfig extends AbstractConfig {
     public static final String PREFIX = "config-center";
     private String url;
 

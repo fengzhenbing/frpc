@@ -8,7 +8,7 @@ import lombok.Data;
  * @author fengzhenbing
  */
 @Data
-public class ApplicationConfig extends AbstractConfig{
+public class ApplicationConfig extends AbstractConfig {
     public static final String PREFIX = "application";
     /**
      * Application name

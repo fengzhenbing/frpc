@@ -8,7 +8,7 @@ import lombok.Data;
  * @author fengzhenbing
  */
 @Data
-public class ConsumerConfig  extends AbstractConfig{
+public class ConsumerConfig extends AbstractConfig {
     public static final String PREFIX = "consumer";
 
     public static final String PROXY_JDK = "jdk";
@@ -22,7 +22,7 @@ public class ConsumerConfig  extends AbstractConfig{
 
     /**
      * proxy: jdk is the default
-     *        byteBuddy
+     * byteBuddy
      */
     private String proxy;
 

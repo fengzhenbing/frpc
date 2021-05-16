@@ -8,5 +8,12 @@ import io.github.zhenbing.frpc.registry.RegistryClient;
  * @author fengzhenbing
  */
 public interface ServiceRegister {
+
+    /**
+     * 注册服务
+     *
+     * @param client
+     * @param service
+     */
     void registerService(RegistryClient client, String service);
 }

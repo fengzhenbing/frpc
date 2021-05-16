@@ -9,7 +9,7 @@ import org.springframework.util.StringUtils;
  * @author fengzhenbing
  */
 @Data
-public class RegistryConfig extends AbstractConfig{
+public class RegistryConfig extends AbstractConfig {
     public static final String PREFIX = "registry";
 
     public static final String ZOOKEEPER = "zookeeper";
@@ -43,18 +43,18 @@ public class RegistryConfig extends AbstractConfig{
         return PREFIX;
     }
 
-    public String getHost(){
+    public String getHost() {
         String host = "";
-        if(!StringUtils.isEmpty(address)){
-           String url = address.split("//")[1];
+        if (!StringUtils.isEmpty(address)) {
+            String url = address.split("//")[1];
             host = url.split(":")[0];
         }
         return host;
     }
 
-    public String getPort(){
+    public String getPort() {
         String host = "";
-        if(!StringUtils.isEmpty(address)){
+        if (!StringUtils.isEmpty(address)) {
             String url = address.split("//")[1];
             host = url.split(":")[1];
         }

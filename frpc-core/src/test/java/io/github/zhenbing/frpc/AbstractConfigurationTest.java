@@ -50,7 +50,7 @@ public abstract class AbstractConfigurationTest {
     /**
      * Add properties to Environment and register configuration into spring context.
      *
-     * @param configuration the configuration class
+     * @param configuration     the configuration class
      * @param inlinedProperties the config properties
      */
     public void load(final Class<?> configuration, final String... inlinedProperties) {
@@ -60,7 +60,7 @@ public abstract class AbstractConfigurationTest {
     /**
      * Add properties to Environment and register configuration into spring context.
      *
-     * @param configuration the configuration class array
+     * @param configuration     the configuration class array
      * @param inlinedProperties the config properties
      */
     public void load(final Class<?>[] configuration, final String... inlinedProperties) {

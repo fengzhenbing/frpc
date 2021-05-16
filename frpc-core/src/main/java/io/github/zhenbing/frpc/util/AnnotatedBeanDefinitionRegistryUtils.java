@@ -1,7 +1,6 @@
 package io.github.zhenbing.frpc.util;
 
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
@@ -71,7 +70,7 @@ public abstract class AnnotatedBeanDefinitionRegistryUtils {
      *
      * @param registry         {@link BeanDefinitionRegistry}
      * @param annotatedClasses {@link Annotation annotation} class
-     * @revision 2.7.3 {@link #isPresentBean(BeanDefinitionRegistry, Class)}
+     * {@link #isPresentBean(BeanDefinitionRegistry, Class)}
      */
     public static void registerBeans(BeanDefinitionRegistry registry, Class<?>... annotatedClasses) {
 

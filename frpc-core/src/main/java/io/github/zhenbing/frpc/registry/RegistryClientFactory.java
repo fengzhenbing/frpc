@@ -17,34 +17,44 @@ import java.util.Objects;
 public class RegistryClientFactory {
     private static RegistryClient registryClient;
 
-    public static RegistryClient getRegistryClient(RegistryConfig registryConfig, ApplicationContext applicationContext){
-        if(StringUtils.isEmpty(registryConfig.getAddress())){
+    public static RegistryClient getRegistryClient(RegistryConfig registryConfig, ApplicationContext applicationContext) {
+        if (StringUtils.isEmpty(registryConfig.getAddress())) {
             log.error("registry address cannot be null");
             return null;
         }
-        if(registryConfig.getAddress().startsWith(RegistryConfig.ZOOKEEPER)){
-            if(Objects.isNull(registryClient)){
-                synchronized (RegistryClientFactory.class){
-                    if(Objects.isNull(registryClient)){
+        if (Objects.isNull(registryClient)) {
+            initRegistryClient(registryConfig, applicationContext);
+        }
+        return registryClient;
+    }
+
+    /**
+     * initRegistryClient
+     *
+     * @param registryConfig
+     * @param applicationContext
+     */
+    private static void initRegistryClient(RegistryConfig registryConfig, ApplicationContext applicationContext) {
+        if (registryConfig.getAddress().startsWith(RegistryConfig.ZOOKEEPER)) {
+            if (Objects.isNull(registryClient)) {
+                synchronized (RegistryClientFactory.class) {
+                    if (Objects.isNull(registryClient)) {
                         try {
                             registryClient = applicationContext.getBean(ZookeeperRegistryClient.class);
-                        }catch (BeansException e){
-                            if(log.isDebugEnabled()){
+                        } catch (BeansException e) {
+                            if (log.isDebugEnabled()) {
                                 log.debug("cannot get a zookeeperRegistryClient from springContext so that init it instead! ");
                             }
                         }
                         //init registryClient
-                        if(Objects.isNull(registryClient)){
+                        if (Objects.isNull(registryClient)) {
                             registryClient = new ZookeeperRegistryClient(registryConfig);
                         }
                     }
                 }
             }
-
-
-        }else if(registryConfig.getAddress().startsWith(RegistryConfig.NACOS)){
+        } else if (registryConfig.getAddress().startsWith(RegistryConfig.NACOS)) {
             //TODO 其他注册中心
         }
-        return registryClient;
     }
 }

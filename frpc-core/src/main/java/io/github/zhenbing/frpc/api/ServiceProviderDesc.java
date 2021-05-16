@@ -22,7 +22,7 @@ public class ServiceProviderDesc {
     // group
     // version
 
-    public String httpUrl(){
-        return "http://" +host +":"+port;
+    public String httpUrl() {
+        return "http://" + host + ":" + port;
     }
 }

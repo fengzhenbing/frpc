@@ -5,7 +5,7 @@ package io.github.zhenbing.frpc.api;
  *
  * @author fengzhenbing
  */
-public class FrpcException  extends RuntimeException {
+public class FrpcException extends RuntimeException {
     private static final long serialVersionUID = -948934144333391209L;
 
     /**

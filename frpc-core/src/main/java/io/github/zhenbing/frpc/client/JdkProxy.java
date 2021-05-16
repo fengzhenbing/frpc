@@ -5,7 +5,8 @@ import io.github.zhenbing.frpc.api.Filter;
 import io.github.zhenbing.frpc.api.FrpcRequest;
 import io.github.zhenbing.frpc.api.FrpcResponse;
 import io.github.zhenbing.frpc.api.ServiceProviderDesc;
-import okhttp3.MediaType;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.OrderComparator;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -16,26 +17,22 @@ import java.lang.reflect.Proxy;
  *
  * @author fengzhenbing
  */
-public class JdkProxy implements FrpcProxy{
+public class JdkProxy implements FrpcProxy {
     private static final NetClient defaultNetClient = new OkHttpClient();
 
     @Override
-    public <T> T create(final Class<T> serviceClass, final ServiceProviderDesc serviceProviderDesc, final Filter... filters) {
-        return  (T) Proxy.newProxyInstance(Frpc.class.getClassLoader(), new Class[]{serviceClass}, new FrpcInvocationHandler(serviceClass,serviceProviderDesc, filters));
+    public <T> T create(final ApplicationContext applicationContext, final Class<T> serviceClass) {
+        return (T) Proxy.newProxyInstance(Frpc.class.getClassLoader(), new Class[]{serviceClass}, new FrpcInvocationHandler(applicationContext, serviceClass));
     }
 
     public static class FrpcInvocationHandler implements InvocationHandler {
 
-        public static final MediaType JSONTYPE = MediaType.get("application/json; charset=utf-8");
-
         private final Class<?> serviceClass;
-        private final ServiceProviderDesc serviceProviderDesc;
-        private final Filter[] filters;
+        private final ApplicationContext applicationContext;
 
-        public <T> FrpcInvocationHandler(Class<T> serviceClass, ServiceProviderDesc serviceProviderDesc, Filter... filters) {
+        public <T> FrpcInvocationHandler(ApplicationContext applicationContext, Class<T> serviceClass) {
             this.serviceClass = serviceClass;
-            this.serviceProviderDesc = serviceProviderDesc;
-            this.filters = filters;
+            this.applicationContext = applicationContext;
         }
 
         // 可以尝试，自己去写对象序列化，二进制还是文本的，，，frpc是xml自定义序列化、反序列化，json: code.google.com/p/frpc
@@ -47,22 +44,21 @@ public class JdkProxy implements FrpcProxy{
 
             // 加filter地方之二
             // mock == true, new Student("hubao");
+            ServiceProviderDesc serviceProviderDesc = Frpc.getServiceProviderDesc(applicationContext, serviceClass);
 
-            FrpcRequest request = new FrpcRequest();
-            request.setServiceInterfaceClass(this.serviceClass.getName());
-            request.setServiceImplClass(serviceProviderDesc.getServiceImplClass());
-            request.setMethod(method.getName());
-            request.setParams(params);
-            request.setUrl(serviceProviderDesc.httpUrl());
+            FrpcRequest request = Frpc.buildFrpcRequest(serviceClass, method, params, serviceProviderDesc);
 
-            if (null!=filters) {
+            Filter[] filters = Frpc.getFilters(applicationContext);
+            if (null != filters) {
+                //sort
+                OrderComparator.sort(filters);
+
                 for (Filter filter : filters) {
                     if (!filter.filter(request)) {
                         return null;
                     }
                 }
             }
-
 
             FrpcResponse response = defaultNetClient.sendRequest(request);
 

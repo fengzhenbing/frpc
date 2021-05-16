@@ -20,7 +20,7 @@ import static io.github.zhenbing.frpc.util.PropertySourcesUtils.getPrefixedPrope
  *
  * @author fengzhenbing
  */
-public class FrpcConfigBindingsRegistrar  implements ImportBeanDefinitionRegistrar, EnvironmentAware {
+public class FrpcConfigBindingsRegistrar implements ImportBeanDefinitionRegistrar, EnvironmentAware {
     private ConfigurableEnvironment environment;
 
     @Override

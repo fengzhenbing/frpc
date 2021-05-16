@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class HeaderFilter implements Filter {
     @Override
     public boolean filter(FrpcRequest request) {
-        request.getHeaders().put("token","fengzhenbing");
+        request.getHeaders().put("token", "fengzhenbing");
         return true;
     }
 }
