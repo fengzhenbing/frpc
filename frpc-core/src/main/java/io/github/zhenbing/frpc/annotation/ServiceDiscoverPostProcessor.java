@@ -1,13 +1,11 @@
 package io.github.zhenbing.frpc.annotation;
 
-import io.github.zhenbing.frpc.api.Filter;
-import io.github.zhenbing.frpc.api.LoadBalancer;
-import io.github.zhenbing.frpc.api.Router;
 import io.github.zhenbing.frpc.client.Frpc;
+import io.github.zhenbing.frpc.registry.ServiceDiscovery;
+import io.github.zhenbing.frpc.registry.ServiceRegistry;
 import lombok.extern.slf4j.Slf4j;
-import io.github.zhenbing.frpc.config.RegistryConfig;
-import io.github.zhenbing.frpc.registry.RegistryClient;
-import io.github.zhenbing.frpc.registry.RegistryClientFactory;
+import io.github.zhenbing.frpc.config.RegistryCenterConfig;
+import io.github.zhenbing.frpc.registry.RegistryDiscoveryFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.BeanCreationException;
@@ -20,7 +18,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.lang.Nullable;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -30,7 +27,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 
 /**
@@ -42,7 +38,7 @@ import java.util.stream.Collectors;
 public class ServiceDiscoverPostProcessor implements InitializingBean, InstantiationAwareBeanPostProcessor, ApplicationContextAware {
     private ApplicationContext applicationContext;
 
-    private RegistryConfig registryConfig;
+    private RegistryCenterConfig registryCenterConfig;
 
     private final Map<String, InjectionMetadata> injectionMetadataCache = new ConcurrentHashMap<>(256);
 
@@ -91,8 +87,8 @@ public class ServiceDiscoverPostProcessor implements InitializingBean, Instantia
         }
 
         //init registryClient
-        RegistryClient registryClient = RegistryClientFactory.getRegistryClient(registryConfig, applicationContext);
-        if (Objects.isNull(registryClient)) {
+        ServiceRegistry registryCenterClient = RegistryDiscoveryFactory.getServiceRegistry(registryCenterConfig, applicationContext);
+        if (Objects.isNull(registryCenterClient)) {
             log.error("cannot find a registryClient");
             return InjectionMetadata.EMPTY;
         }
@@ -146,7 +142,7 @@ public class ServiceDiscoverPostProcessor implements InitializingBean, Instantia
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        registryConfig = this.applicationContext.getBean(RegistryConfig.class);
+        registryCenterConfig = this.applicationContext.getBean(RegistryCenterConfig.class);
     }
 
     /**

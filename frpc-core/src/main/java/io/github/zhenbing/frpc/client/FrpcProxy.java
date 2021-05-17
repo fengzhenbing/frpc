@@ -1,7 +1,5 @@
 package io.github.zhenbing.frpc.client;
 
-import io.github.zhenbing.frpc.api.Filter;
-import io.github.zhenbing.frpc.api.ServiceProviderDesc;
 import org.springframework.context.ApplicationContext;
 
 /**

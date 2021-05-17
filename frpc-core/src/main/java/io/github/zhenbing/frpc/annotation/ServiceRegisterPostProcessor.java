@@ -1,11 +1,11 @@
 package io.github.zhenbing.frpc.annotation;
 
-import io.github.zhenbing.frpc.api.ServiceProviderDesc;
+import io.github.zhenbing.frpc.registry.ServiceDesc;
+import io.github.zhenbing.frpc.registry.ServiceRegistry;
 import lombok.extern.slf4j.Slf4j;
 import io.github.zhenbing.frpc.config.ProviderConfig;
-import io.github.zhenbing.frpc.config.RegistryConfig;
-import io.github.zhenbing.frpc.registry.RegistryClient;
-import io.github.zhenbing.frpc.registry.RegistryClientFactory;
+import io.github.zhenbing.frpc.config.RegistryCenterConfig;
+import io.github.zhenbing.frpc.registry.RegistryDiscoveryFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -26,15 +26,15 @@ import java.util.Objects;
 public class ServiceRegisterPostProcessor implements InitializingBean, BeanPostProcessor, ApplicationContextAware {
     private ApplicationContext applicationContext;
 
-    private RegistryConfig registryConfig;
+    private RegistryCenterConfig registryCenterConfig;
 
     private ProviderConfig providerConfig;
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         if (bean.getClass().isAnnotationPresent(Service.class)) {
-            RegistryClient registryClient = RegistryClientFactory.getRegistryClient(registryConfig, applicationContext);
-            if (Objects.isNull(registryClient)) {
+            ServiceRegistry registryCenterClient = RegistryDiscoveryFactory.getServiceRegistry(registryCenterConfig, applicationContext);
+            if (Objects.isNull(registryCenterClient)) {
                 log.error("cannot find a registryClient");
                 return bean;
             }
@@ -49,10 +49,10 @@ public class ServiceRegisterPostProcessor implements InitializingBean, BeanPostP
             }
 
             String serviceInterfaceName = bean.getClass().getInterfaces()[0].getName();
-            ServiceProviderDesc serviceDesc = ServiceProviderDesc.builder()
+            ServiceDesc serviceDesc = ServiceDesc.builder()
                     .host(serviceHost)
                     .port(providerConfig.getPort()).serviceImplClass(bean.getClass().getName()).serviceInterfaceClass(serviceInterfaceName).build();
-            registryClient.registerService(serviceDesc);
+            registryCenterClient.registerService(serviceDesc);
 
         }
         return bean;
@@ -65,7 +65,7 @@ public class ServiceRegisterPostProcessor implements InitializingBean, BeanPostP
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        registryConfig = this.applicationContext.getBean(RegistryConfig.class);
+        registryCenterConfig = this.applicationContext.getBean(RegistryCenterConfig.class);
         providerConfig = this.applicationContext.getBean(ProviderConfig.class);
     }
 

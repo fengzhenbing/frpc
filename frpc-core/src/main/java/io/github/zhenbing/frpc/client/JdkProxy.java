@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import io.github.zhenbing.frpc.api.Filter;
 import io.github.zhenbing.frpc.api.FrpcRequest;
 import io.github.zhenbing.frpc.api.FrpcResponse;
-import io.github.zhenbing.frpc.api.ServiceProviderDesc;
+import io.github.zhenbing.frpc.registry.ServiceDesc;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.OrderComparator;
 
@@ -44,9 +44,9 @@ public class JdkProxy implements FrpcProxy {
 
             // 加filter地方之二
             // mock == true, new Student("hubao");
-            ServiceProviderDesc serviceProviderDesc = Frpc.getServiceProviderDesc(applicationContext, serviceClass);
+            ServiceDesc serviceDesc = Frpc.getServiceProviderDesc(applicationContext, serviceClass);
 
-            FrpcRequest request = Frpc.buildFrpcRequest(serviceClass, method, params, serviceProviderDesc);
+            FrpcRequest request = Frpc.buildFrpcRequest(serviceClass, method, params, serviceDesc);
 
             Filter[] filters = Frpc.getFilters(applicationContext);
             if (null != filters) {

@@ -5,17 +5,14 @@ import io.github.zhenbing.frpc.api.FrpcResponse;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.implementation.InvocationHandlerAdapter;
 import net.bytebuddy.matcher.ElementMatchers;
-import okhttp3.MediaType;
 import io.github.zhenbing.frpc.api.Filter;
 import io.github.zhenbing.frpc.api.FrpcRequest;
-import io.github.zhenbing.frpc.api.ServiceProviderDesc;
+import io.github.zhenbing.frpc.registry.ServiceDesc;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.OrderComparator;
-import org.springframework.core.Ordered;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 /**
  * BuddyProxy
@@ -65,9 +62,9 @@ public class BuddyProxy implements FrpcProxy {
 
             // 加filter地方之二
             // mock == true, new Student("hubao");
-            ServiceProviderDesc serviceProviderDesc = Frpc.getServiceProviderDesc(applicationContext, serviceClass);
+            ServiceDesc serviceDesc = Frpc.getServiceProviderDesc(applicationContext, serviceClass);
 
-            FrpcRequest request = Frpc.buildFrpcRequest(serviceClass, method, params, serviceProviderDesc);
+            FrpcRequest request = Frpc.buildFrpcRequest(serviceClass, method, params, serviceDesc);
 
             Filter[] filters = Frpc.getFilters(applicationContext);
             if (null != filters) {

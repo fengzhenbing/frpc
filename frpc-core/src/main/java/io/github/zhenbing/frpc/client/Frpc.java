@@ -1,11 +1,12 @@
 package io.github.zhenbing.frpc.client;
 
 import io.github.zhenbing.frpc.api.*;
-import io.github.zhenbing.frpc.config.RegistryConfig;
-import io.github.zhenbing.frpc.registry.RegistryClientFactory;
+import io.github.zhenbing.frpc.config.RegistryCenterConfig;
+import io.github.zhenbing.frpc.registry.RegistryDiscoveryFactory;
+import io.github.zhenbing.frpc.registry.ServiceDesc;
+import io.github.zhenbing.frpc.registry.ServiceDiscovery;
 import lombok.extern.slf4j.Slf4j;
 import io.github.zhenbing.frpc.config.ConsumerConfig;
-import io.github.zhenbing.frpc.registry.RegistryClient;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.CollectionUtils;
@@ -37,18 +38,18 @@ public class Frpc {
         }
     }
 
-    public static ServiceProviderDesc getServiceProviderDesc(ApplicationContext applicationContext, Class<?> serviceInterfaceClass) {
-        RegistryConfig registryConfig = applicationContext.getBean(RegistryConfig.class);
-        RegistryClient registryClient = RegistryClientFactory.getRegistryClient(registryConfig, applicationContext);
+    public static ServiceDesc getServiceProviderDesc(ApplicationContext applicationContext, Class<?> serviceInterfaceClass) {
+        RegistryCenterConfig registryCenterConfig = applicationContext.getBean(RegistryCenterConfig.class);
+        ServiceDiscovery registryCenterClient = RegistryDiscoveryFactory.getServiceDiscovery(registryCenterConfig, applicationContext);
 
         // 1. 从zk拿到服务提供的列表
-        List<ServiceProviderDesc> serviceProviderDescList = registryClient.loadServiceProviderDescList(serviceInterfaceClass.getName());
-        if (CollectionUtils.isEmpty(serviceProviderDescList)) {
+        List<ServiceDesc> serviceDescList = registryCenterClient.loadServiceDescList(serviceInterfaceClass.getName());
+        if (CollectionUtils.isEmpty(serviceDescList)) {
             log.error("no service provider for -> {}", serviceInterfaceClass);
             return null;
         }
 
-        List<String> invokers = serviceProviderDescList.stream().map(e -> e.httpUrl()).collect(Collectors.toList());
+        List<String> invokers = serviceDescList.stream().map(e -> e.httpUrl()).collect(Collectors.toList());
 
         // 路由匹配
         Router router = getRouter(applicationContext);
@@ -64,14 +65,14 @@ public class Frpc {
         } else {
             url = invokers.get(0);
         }
-        ServiceProviderDesc serviceProviderDesc = serviceProviderDescList.stream().filter(e -> e.httpUrl().equals(url)).collect(Collectors.toList()).get(0);
-        if (serviceProviderDesc == null) {
+        ServiceDesc serviceDesc = serviceDescList.stream().filter(e -> e.httpUrl().equals(url)).collect(Collectors.toList()).get(0);
+        if (serviceDesc == null) {
             log.error("serviceProviderDesc is null");
         }
-        return serviceProviderDesc;
+        return serviceDesc;
     }
 
-    public static <T> T create(final ApplicationContext applicationContext,final Class<T> serviceClass, final ServiceProviderDesc serviceProviderDesc, Filter... filters) {
+    public static <T> T create(final ApplicationContext applicationContext, final Class<T> serviceClass, final ServiceDesc serviceDesc, Filter... filters) {
 
         // 0. 替换动态代理 -> AOP
         return (T) defaultProxy.create(applicationContext,serviceClass);
@@ -132,16 +133,16 @@ public class Frpc {
      * @param serviceClass
      * @param method
      * @param params
-     * @param serviceProviderDesc
+     * @param serviceDesc
      * @return
      */
-    public static FrpcRequest buildFrpcRequest(Class serviceClass, Method method, Object[] params, ServiceProviderDesc serviceProviderDesc) {
+    public static FrpcRequest buildFrpcRequest(Class serviceClass, Method method, Object[] params, ServiceDesc serviceDesc) {
         FrpcRequest request = new FrpcRequest();
         request.setServiceInterfaceClass(serviceClass.getName());
-        request.setServiceImplClass(serviceProviderDesc.getServiceImplClass());
+        request.setServiceImplClass(serviceDesc.getServiceImplClass());
         request.setMethod(method.getName());
         request.setParams(params);
-        request.setUrl(serviceProviderDesc.httpUrl());
+        request.setUrl(serviceDesc.httpUrl());
         return request;
     }
 }

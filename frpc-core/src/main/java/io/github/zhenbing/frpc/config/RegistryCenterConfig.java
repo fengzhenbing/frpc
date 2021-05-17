@@ -9,7 +9,7 @@ import org.springframework.util.StringUtils;
  * @author fengzhenbing
  */
 @Data
-public class RegistryConfig extends AbstractConfig {
+public class RegistryCenterConfig extends AbstractConfig {
     public static final String PREFIX = "registry";
 
     public static final String ZOOKEEPER = "zookeeper";

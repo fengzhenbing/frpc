@@ -1,4 +1,4 @@
-package io.github.zhenbing.frpc.api;
+package io.github.zhenbing.frpc.registry;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +12,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class ServiceProviderDesc {
+public class ServiceDesc {
 
     private String host;
     private Integer port;
