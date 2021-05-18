@@ -9,7 +9,7 @@ import io.github.zhenbing.frpc.config.AbstractConfig;
 import io.github.zhenbing.frpc.config.RegistryCenterConfig;
 
 /**
- * ZookeeperRegistryClient
+ * ZookeeperClient
  *
  * @author fengzhenbing
  */

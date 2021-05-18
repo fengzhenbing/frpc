@@ -19,9 +19,7 @@
 
     <modules>
         <module>frpc-core</module>
-        <module>frpc-demo-api</module>
-        <module>frpc-demo-consumer</module>
-        <module>frpc-demo-provider</module>
+        <module>frpc-demo</module>
         <module>frpc-spring-boot-starter</module>
     </modules>
 

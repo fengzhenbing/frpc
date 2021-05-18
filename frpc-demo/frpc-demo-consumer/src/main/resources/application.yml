@@ -5,7 +5,7 @@ zookeeper: 127.0.0.1:2181
 
 frpc:
   application:
-    name: mall-comsumer
+    name: frpc-comsumer
   registry:
     address: zookeeper://${zookeeper}
   consumer:

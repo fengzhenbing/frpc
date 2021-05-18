@@ -1,14 +1,14 @@
 server:
-  port: 8089
+  port: 8090
 
 zookeeper: 127.0.0.1:2181
 
 frpc:
   application:
-    name: mall-provider
+    name: frpc-provider
   registry:
     address: zookeeper://${zookeeper}
   provider:
     host: 127.0.0.1
-    port: 8089
+    port: 8090
     contextPath: /provider

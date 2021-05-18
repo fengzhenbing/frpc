@@ -87,10 +87,10 @@ public class RegistryDiscoveryFactory {
                             serviceDiscovery = applicationContext.getBean(ServiceDiscovery.class);
                         } catch (BeansException e) {
                             if (log.isDebugEnabled()) {
-                                log.debug("cannot get a serviceRegistry from springContext so that init it instead! ");
+                                log.debug("cannot get a serviceDiscovery from springContext so that init it instead! ");
                             }
                         }
-                        //init serviceRegistry
+                        //init serviceDiscovery
                         if (Objects.isNull(serviceDiscovery)) {
                             ZookeeperClient zookeeperClient = new ZookeeperClient();
                             zookeeperClient.init(registryCenterConfig);
