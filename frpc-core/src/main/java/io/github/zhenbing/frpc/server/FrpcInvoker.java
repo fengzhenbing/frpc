@@ -27,7 +27,6 @@ public class FrpcInvoker {
         FrpcResponse response = new FrpcResponse();
         String serviceClass = request.getServiceImplClass();
 
-        // 作业1：改成泛型和反射
         // this.applicationContext.getBean(serviceClass);
         Object service = resolver.resolve(serviceClass);
 

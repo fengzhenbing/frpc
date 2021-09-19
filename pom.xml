@@ -21,6 +21,10 @@
         <module>frpc-core</module>
         <module>frpc-demo</module>
         <module>frpc-spring-boot-starter</module>
+        <module>frpc-repository</module>
+        <module>frpc-repository/frpc-repository-consumer/frpc-repository-consumer-api</module>
+        <module>frpc-repository/frpc-repository-consumer/frpc-repository-consumer-zookeeper</module>
+        <module>frpc-repository/frpc-repository-provider/frpc-repository-provider-zookeeper</module>
     </modules>
 
     <properties>
@@ -33,5 +37,12 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.12</version>
+        </dependency>
+
     </dependencies>
 </project>
