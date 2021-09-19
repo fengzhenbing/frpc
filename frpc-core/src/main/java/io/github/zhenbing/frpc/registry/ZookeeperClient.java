@@ -25,6 +25,9 @@ public class ZookeeperClient implements RegistryCenterClient {
         client = CuratorFrameworkFactory.builder()
                 .connectString(registryCenterConfig.getHost() + ":" + registryCenterConfig.getPort())
                 .namespace(AbstractConfig.FRPC)
+                // 超时时间： 服务断了后， 超过这个时间，临时节点被删除。 限制在 2 到20 个ticktime
+                .sessionTimeoutMs(4000)
+                .connectionTimeoutMs(4000)
                 .retryPolicy(retryPolicy).build();
         client.start();
     }

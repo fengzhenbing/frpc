@@ -114,9 +114,9 @@ public class ZookeeperDiscovery implements ServiceDiscovery {
             String[] hostInfos = leafPath.split("_");
             String host = hostInfos[0];
             Integer port = Integer.parseInt(hostInfos[1]);
-           String interfaceName =  pathItems[level-1];
-           List<ServiceDesc> serviceDescList = serviceListMap.get(interfaceName);
-            serviceDescList = serviceDescList.stream().filter(e->!(e.getPort().equals(port)&&e.getHost().equals(host))).collect(Collectors.toList());
+            String interfaceName = pathItems[level - 1];
+            List<ServiceDesc> serviceDescList = serviceListMap.get(interfaceName);
+            serviceDescList = serviceDescList.stream().filter(e -> !(e.getPort().equals(port) && e.getHost().equals(host))).collect(Collectors.toList());
             serviceListMap.put(interfaceName, serviceDescList);
         }
     }
@@ -128,15 +128,15 @@ public class ZookeeperDiscovery implements ServiceDiscovery {
         int level = pathItems.length - 1;
         String leafPath = pathItems[level];
         if (leafPath.contains("_")) {
-           ServiceDesc serviceDesc = buildServiceDesc(data, leafPath);
-           String interfaceName = serviceDesc.getServiceInterfaceClass();
+            ServiceDesc serviceDesc = buildServiceDesc(data, leafPath);
+            String interfaceName = serviceDesc.getServiceInterfaceClass();
             List<ServiceDesc> serviceDescList = serviceListMap.get(interfaceName);
-            if(CollectionUtils.isEmpty(serviceDescList)){
+            if (CollectionUtils.isEmpty(serviceDescList)) {
                 serviceListMap.put(interfaceName, Lists.newArrayList(serviceDesc));
-            }else {
-                serviceDescList = serviceDescList.stream().filter(e->!(e.getHost().equals(serviceDesc.getHost())&&e.getPort().equals(serviceDesc.getPort()))).collect(Collectors.toList());
+            } else {
+                serviceDescList = serviceDescList.stream().filter(e -> !(e.getHost().equals(serviceDesc.getHost()) && e.getPort().equals(serviceDesc.getPort()))).collect(Collectors.toList());
                 serviceDescList.add(serviceDesc);
-                serviceListMap.put(interfaceName,serviceDescList);
+                serviceListMap.put(interfaceName, serviceDescList);
             }
         }
     }

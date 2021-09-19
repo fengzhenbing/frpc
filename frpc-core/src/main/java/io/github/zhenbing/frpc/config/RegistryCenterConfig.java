@@ -3,6 +3,8 @@ package io.github.zhenbing.frpc.config;
 import lombok.Data;
 import org.springframework.util.StringUtils;
 
+import java.util.Properties;
+
 /**
  * RegistryConfig
  *
@@ -15,6 +17,8 @@ public class RegistryCenterConfig extends AbstractConfig {
     public static final String ZOOKEEPER = "zookeeper";
 
     public static final String NACOS = "nacos";
+
+    private Properties props = new Properties();
 
     String PASSWORD_KEY = "password";
 
