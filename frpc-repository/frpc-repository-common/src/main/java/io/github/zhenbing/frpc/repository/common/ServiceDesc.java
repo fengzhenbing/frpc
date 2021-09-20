@@ -19,8 +19,7 @@ public class ServiceDesc {
     private String serviceInterfaceClass;
     private String serviceImplClass;
 
-    // group
-    // version
+    private String version;
 
     public String httpUrl() {
         return "http://" + host + ":" + port;

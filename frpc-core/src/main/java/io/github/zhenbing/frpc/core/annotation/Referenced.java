@@ -25,4 +25,9 @@ public @interface Referenced {
      * Service version, default value is empty string
      */
     String version() default "";
+
+    /**
+     * Loadbalancer type
+     */
+    String loadBalancer() default "";
 }

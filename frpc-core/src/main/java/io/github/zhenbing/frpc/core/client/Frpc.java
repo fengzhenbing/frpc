@@ -1,9 +1,12 @@
 package io.github.zhenbing.frpc.core.client;
 
+import com.google.common.collect.Lists;
+import io.github.zhenbing.frpc.core.annotation.ReferencedDesc;
 import io.github.zhenbing.frpc.core.api.Filter;
 import io.github.zhenbing.frpc.core.api.FrpcRequest;
 import io.github.zhenbing.frpc.core.api.Router;
-import io.github.zhenbing.frpc.core.api.LoadBalancer;
+import io.github.zhenbing.frpc.core.loadBalancer.LoadBalancer;
+import io.github.zhenbing.frpc.core.loadBalancer.LoadBalancerFactory;
 import io.github.zhenbing.frpc.core.repository.RepositoryConsumerFactory;
 import io.github.zhenbing.frpc.repository.common.RepositoryConfig;
 import io.github.zhenbing.frpc.repository.common.ServiceDesc;
@@ -32,54 +35,37 @@ public class Frpc {
     private static final BuddyProxy buddyProxy = new BuddyProxy();
 
 
-    public static <T, filters> T createFromRepository(ApplicationContext applicationContext, Class<?> serviceInterfaceClass) {
+    public static <T, filters> T createFromRepository(ApplicationContext applicationContext, ReferencedDesc referencedDesc) {
         ConsumerConfig consumerConfig =  applicationContext.getBean(ConsumerConfig.class);
         if (ConsumerConfig.PROXY_BYTE_BUDDY.equals(consumerConfig.getProxy())) {
-            return (T) buddyProxy.create(applicationContext,serviceInterfaceClass);
+            return (T) buddyProxy.create(applicationContext,referencedDesc);
         } else {
-            return (T) defaultProxy.create(applicationContext,serviceInterfaceClass);
+            return (T) defaultProxy.create(applicationContext,referencedDesc);
         }
     }
 
-    public static ServiceDesc getServiceProviderDesc(ApplicationContext applicationContext, Class<?> serviceInterfaceClass) {
+    public static ServiceDesc getServiceProviderDesc(ApplicationContext applicationContext, ReferencedDesc referencedDesc) {
         RepositoryConfig repositoryConfig = applicationContext.getBean(RepositoryConfig.class);
         RepositoryConsumer repositoryConsumer = RepositoryConsumerFactory.getRepositoryConsumer(repositoryConfig);
 
         // 1. 从zk拿到服务提供的列表
-        List<ServiceDesc> serviceDescList = repositoryConsumer.loadServiceDescList(serviceInterfaceClass.getName());
+        List<ServiceDesc> serviceDescList = repositoryConsumer.loadServiceDescList(referencedDesc.getInterfaceName());
         if (CollectionUtils.isEmpty(serviceDescList)) {
-            log.error("no service provider for -> {}", serviceInterfaceClass);
+            log.error("no service provider for -> {}", referencedDesc);
             return null;
         }
 
-        List<String> invokers = serviceDescList.stream().map(e -> e.httpUrl()).collect(Collectors.toList());
-
         // 路由匹配
+        List<ServiceDesc> invokers = serviceDescList;
         Router router = getRouter(applicationContext);
         if (Objects.nonNull(router)) {
-            invokers = router.route(invokers);
+            invokers = router.route(serviceDescList);
         }
 
         // 负载均衡
-        String url;
-        LoadBalancer loadBalancer = getLoadBalancer(applicationContext);
-        if (Objects.nonNull(loadBalancer)) {
-            url = loadBalancer.select(invokers);
-        } else {
-            url = invokers.get(0);
-        }
-        ServiceDesc serviceDesc = serviceDescList.stream().filter(e -> e.httpUrl().equals(url)).collect(Collectors.toList()).get(0);
-        if (serviceDesc == null) {
-            log.error("serviceProviderDesc is null");
-        }
-        return serviceDesc;
-    }
-
-    public static <T> T create(final ApplicationContext applicationContext, final Class<T> serviceClass, final ServiceDesc serviceDesc, Filter... filters) {
-
-        // 0. 替换动态代理 -> AOP
-        return (T) defaultProxy.create(applicationContext,serviceClass);
-
+        LoadBalancer loadBalancer = LoadBalancerFactory.getLoadBalancer(referencedDesc.getLoadBalancer());
+        Objects.requireNonNull(loadBalancer,"No loadBalancer configured.");
+        return loadBalancer.select(invokers);
     }
 
     /**

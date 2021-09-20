@@ -1,8 +1,10 @@
 package io.github.zhenbing.frpc.core.repository;
 
 import io.github.zhenbing.frpc.core.annotation.Referenced;
+import io.github.zhenbing.frpc.core.annotation.ReferencedDesc;
 import io.github.zhenbing.frpc.core.client.Frpc;
-import io.github.zhenbing.frpc.repository.common.RepositoryConfig;
+import io.github.zhenbing.frpc.core.config.ConsumerConfig;
+import io.github.zhenbing.frpc.core.loadBalancer.LoadBalancer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyValues;
@@ -13,14 +15,10 @@ import org.springframework.beans.factory.config.InstantiationAwareBeanPostProces
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.core.annotation.MergedAnnotation;
-import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -36,14 +34,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RepositoryConsumerPostProcessor implements InitializingBean, InstantiationAwareBeanPostProcessor, ApplicationContextAware {
     private ApplicationContext applicationContext;
 
-    private RepositoryConfig repositoryConfig;
+    private ConsumerConfig consumerConfig;
 
     private final Map<String, InjectionMetadata> injectionMetadataCache = new ConcurrentHashMap<>(256);
 
-    private final Set<Class<? extends Annotation>> autowiredAnnotationTypes = new LinkedHashSet<>(4);
-
     public RepositoryConsumerPostProcessor() {
-        this.autowiredAnnotationTypes.add(Referenced.class);
     }
 
     @Override
@@ -80,7 +75,7 @@ public class RepositoryConsumerPostProcessor implements InitializingBean, Instan
     }
 
     private InjectionMetadata buildReferencingMetadata(Class<?> clazz) {
-        if (!AnnotationUtils.isCandidateClass(clazz, this.autowiredAnnotationTypes)) {
+        if (!AnnotationUtils.isCandidateClass(clazz, Referenced.class)) {
             return InjectionMetadata.EMPTY;
         }
 
@@ -90,16 +85,23 @@ public class RepositoryConsumerPostProcessor implements InitializingBean, Instan
         do {
             final List<InjectionMetadata.InjectedElement> currElements = new ArrayList<>();
             ReflectionUtils.doWithLocalFields(targetClass, field -> {
-                MergedAnnotation<?> ann = findReferencedAnnotation(field);
-                if (ann != null) {
+                if (field.isAnnotationPresent(Referenced.class)) {
                     if (Modifier.isStatic(field.getModifiers())) {
                         if (log.isInfoEnabled()) {
                             log.info("Referenced annotation is not supported on static fields: " + field);
                         }
                         return;
                     }
-                    currElements.add(new ReferencedFieldElement(field));
-
+                    Referenced referenced = field.getAnnotation(Referenced.class);
+                    ReferencedDesc referencedDesc = ReferencedDesc.buildFromReferenced(referenced);
+                    if(Objects.isNull(referenced.interfaceClass()) || referenced.interfaceClass().equals(void.class)) {
+                        referencedDesc.setInterfaceClass(field.getType());
+                    }
+                    referencedDesc.setInterfaceName(referencedDesc.getInterfaceClass().getName());
+                    if(StringUtils.isEmpty(referencedDesc.getLoadBalancer())) {
+                        referencedDesc.setLoadBalancer(Optional.ofNullable(consumerConfig.getLoadBalancer()).orElse(LoadBalancer.DEFAULT_LOADBANCER));
+                    }
+                    currElements.add(new ReferencedFieldElement(field, referencedDesc));
                 }
             });
 
@@ -113,19 +115,6 @@ public class RepositoryConsumerPostProcessor implements InitializingBean, Instan
         return InjectionMetadata.forElements(elements, clazz);
     }
 
-
-    @Nullable
-    private MergedAnnotation<?> findReferencedAnnotation(AccessibleObject ao) {
-        MergedAnnotations annotations = MergedAnnotations.from(ao);
-        for (Class<? extends Annotation> type : this.autowiredAnnotationTypes) {
-            MergedAnnotation<?> annotation = annotations.get(type);
-            if (annotation.isPresent()) {
-                return annotation;
-            }
-        }
-        return null;
-    }
-
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
@@ -133,16 +122,18 @@ public class RepositoryConsumerPostProcessor implements InitializingBean, Instan
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        repositoryConfig = this.applicationContext.getBean(RepositoryConfig.class);
+        consumerConfig = this.applicationContext.getBean(ConsumerConfig.class);
     }
 
     /**
      * Class representing injection information about an annotated field.
      */
     private class ReferencedFieldElement extends InjectionMetadata.InjectedElement {
+        private final ReferencedDesc referencedDesc;
 
-        public ReferencedFieldElement(Field field) {
+        public ReferencedFieldElement(Field field, ReferencedDesc referencedDesc) {
             super(field, null);
+            this.referencedDesc = referencedDesc;
         }
 
 
@@ -151,10 +142,12 @@ public class RepositoryConsumerPostProcessor implements InitializingBean, Instan
             Field field = (Field) this.member;
 
             //todo value 缓存起来
-            Object value = Frpc.createFromRepository(applicationContext, field.getType());
+            Object value = Frpc.createFromRepository(applicationContext, referencedDesc);
             if (Objects.nonNull(value)) {
+                Boolean originalAccessible = field.isAccessible();
                 ReflectionUtils.makeAccessible(field);
                 field.set(bean, value);
+                field.setAccessible(originalAccessible);
             }
         }
     }

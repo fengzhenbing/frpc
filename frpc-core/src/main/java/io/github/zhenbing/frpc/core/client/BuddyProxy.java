@@ -1,6 +1,7 @@
 package io.github.zhenbing.frpc.core.client;
 
 import com.alibaba.fastjson.JSON;
+import io.github.zhenbing.frpc.core.annotation.ReferencedDesc;
 import io.github.zhenbing.frpc.core.api.FrpcResponse;
 import io.github.zhenbing.frpc.repository.common.ServiceDesc;
 import net.bytebuddy.ByteBuddy;
@@ -24,12 +25,12 @@ public class BuddyProxy implements FrpcProxy {
     private static final NetClient defaultNetClient = new OkHttpClient();
 
     @Override
-    public <T> T create(final ApplicationContext applicationContext, Class<T> serviceClass) {
+    public <T> T create(final ApplicationContext applicationContext, ReferencedDesc referencedDesc) {
         try {
             return (T) new ByteBuddy().subclass(Object.class)
-                    .implement(serviceClass)
-                    .method(ElementMatchers.isDeclaredBy(serviceClass))
-                    .intercept(InvocationHandlerAdapter.of(new BuddyInvocationHandler(applicationContext, serviceClass)))
+                    .implement(referencedDesc.getInterfaceClass())
+                    .method(ElementMatchers.isDeclaredBy(referencedDesc.getInterfaceClass()))
+                    .intercept(InvocationHandlerAdapter.of(new BuddyInvocationHandler(applicationContext, referencedDesc)))
                     .make()
                     .load(getClass().getClassLoader())
                     .getLoaded()
@@ -45,11 +46,11 @@ public class BuddyProxy implements FrpcProxy {
 
     public static class BuddyInvocationHandler implements InvocationHandler {
 
-        private final Class<?> serviceClass;
+        private final ReferencedDesc referencedDesc;
         private final ApplicationContext applicationContext;
 
-        public <T> BuddyInvocationHandler(ApplicationContext applicationContext, Class<T> serviceClass) {
-            this.serviceClass = serviceClass;
+        public <T> BuddyInvocationHandler(ApplicationContext applicationContext, ReferencedDesc referencedDesc) {
+            this.referencedDesc = referencedDesc;
             this.applicationContext = applicationContext;
         }
 
@@ -61,10 +62,10 @@ public class BuddyProxy implements FrpcProxy {
         public Object invoke(Object proxy, Method method, Object[] params) throws Throwable {
 
             // 加filter地方之二
-            // mock == true, new Student("hubao");
-            ServiceDesc serviceDesc = Frpc.getServiceProviderDesc(applicationContext, serviceClass);
+            // mock == true, new Student("test");
+            ServiceDesc serviceDesc = Frpc.getServiceProviderDesc(applicationContext, referencedDesc);
 
-            FrpcRequest request = Frpc.buildFrpcRequest(serviceClass, method, params, serviceDesc);
+            FrpcRequest request = Frpc.buildFrpcRequest(referencedDesc.getInterfaceClass(), method, params, serviceDesc);
 
             Filter[] filters = Frpc.getFilters(applicationContext);
             if (null != filters) {

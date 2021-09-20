@@ -1,6 +1,7 @@
 package io.github.zhenbing.frpc.core.config;
 
 import io.github.zhenbing.frpc.common.config.AbstractConfig;
+import io.github.zhenbing.frpc.core.loadBalancer.LoadBalancer;
 import lombok.Data;
 
 /**
@@ -27,6 +28,10 @@ public class ConsumerConfig extends AbstractConfig {
      */
     private String proxy;
 
+    /**
+     * Global loadBalancer: random is the default
+     */
+    private String loadBalancer = LoadBalancer.DEFAULT_LOADBANCER;
 
     @Override
     public String getConfigPrefix() {

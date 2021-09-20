@@ -1,6 +1,7 @@
 package io.github.zhenbing.frpc.core.client;
 
 import com.alibaba.fastjson.JSON;
+import io.github.zhenbing.frpc.core.annotation.ReferencedDesc;
 import io.github.zhenbing.frpc.core.api.Filter;
 import io.github.zhenbing.frpc.core.api.FrpcRequest;
 import io.github.zhenbing.frpc.core.api.FrpcResponse;
@@ -21,17 +22,17 @@ public class JdkProxy implements FrpcProxy {
     private static final NetClient defaultNetClient = new OkHttpClient();
 
     @Override
-    public <T> T create(final ApplicationContext applicationContext, final Class<T> serviceClass) {
-        return (T) Proxy.newProxyInstance(Frpc.class.getClassLoader(), new Class[]{serviceClass}, new FrpcInvocationHandler(applicationContext, serviceClass));
+    public <T> T create(final ApplicationContext applicationContext, final ReferencedDesc referencedDesc) {
+        return (T) Proxy.newProxyInstance(Frpc.class.getClassLoader(), new Class[]{referencedDesc.getInterfaceClass()}, new FrpcInvocationHandler(applicationContext, referencedDesc));
     }
 
     public static class FrpcInvocationHandler implements InvocationHandler {
 
-        private final Class<?> serviceClass;
+        private final ReferencedDesc referencedDesc;
         private final ApplicationContext applicationContext;
 
-        public <T> FrpcInvocationHandler(ApplicationContext applicationContext, Class<T> serviceClass) {
-            this.serviceClass = serviceClass;
+        public <T> FrpcInvocationHandler(ApplicationContext applicationContext, ReferencedDesc referencedDesc) {
+            this.referencedDesc = referencedDesc;
             this.applicationContext = applicationContext;
         }
 
@@ -44,9 +45,9 @@ public class JdkProxy implements FrpcProxy {
 
             // 加filter地方之二
             // mock == true, new Student("hubao");
-            ServiceDesc serviceDesc = Frpc.getServiceProviderDesc(applicationContext, serviceClass);
+            ServiceDesc serviceDesc = Frpc.getServiceProviderDesc(applicationContext, referencedDesc);
 
-            FrpcRequest request = Frpc.buildFrpcRequest(serviceClass, method, params, serviceDesc);
+            FrpcRequest request = Frpc.buildFrpcRequest(referencedDesc.getInterfaceClass(), method, params, serviceDesc);
 
             Filter[] filters = Frpc.getFilters(applicationContext);
             if (null != filters) {
