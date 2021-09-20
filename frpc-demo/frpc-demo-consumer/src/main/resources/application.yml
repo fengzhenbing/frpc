@@ -6,7 +6,8 @@ zookeeper: 127.0.0.1:2181
 frpc:
   application:
     name: frpc-comsumer
-  registry:
+  repository:
+    type: zookeeper
     address: zookeeper://${zookeeper}
   consumer:
     proxy: byteBuddy

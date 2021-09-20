@@ -22,14 +22,14 @@
         <module>frpc-demo</module>
         <module>frpc-spring-boot-starter</module>
         <module>frpc-repository</module>
-        <module>frpc-repository/frpc-repository-consumer/frpc-repository-consumer-api</module>
-        <module>frpc-repository/frpc-repository-consumer/frpc-repository-consumer-zookeeper</module>
-        <module>frpc-repository/frpc-repository-provider/frpc-repository-provider-zookeeper</module>
+        <module>frpc-common</module>
     </modules>
 
     <properties>
         <jdk.version>1.8</jdk.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <commons-lang3.version>3.3.2</commons-lang3.version>
+        <commons-collections4.version>4.1</commons-collections4.version>
     </properties>
 
     <dependencies>
@@ -39,9 +39,26 @@
         </dependency>
 
         <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.70</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.12</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>${commons-collections4.version}</version>
         </dependency>
 
     </dependencies>

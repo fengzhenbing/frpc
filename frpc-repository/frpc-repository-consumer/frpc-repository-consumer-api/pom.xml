@@ -10,6 +10,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>frpc-repository-consumer-api</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>io.github.zhenbing</groupId>
+            <artifactId>frpc-repository-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
 
 </project>

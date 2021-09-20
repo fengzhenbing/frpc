@@ -1,6 +1,6 @@
 package io.github.zhenbing.frpc.demo.consumer;
 
-import io.github.zhenbing.frpc.annotation.EnableFrpc;
+import io.github.zhenbing.frpc.core.annotation.EnableFrpc;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

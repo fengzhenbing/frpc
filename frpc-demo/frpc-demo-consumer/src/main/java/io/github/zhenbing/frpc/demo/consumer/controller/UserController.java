@@ -1,8 +1,8 @@
 package io.github.zhenbing.frpc.demo.consumer.controller;
 
+import io.github.zhenbing.frpc.core.annotation.Referenced;
 import io.github.zhenbing.frpc.demo.api.User;
 import io.github.zhenbing.frpc.demo.api.UserService;
-import io.github.zhenbing.frpc.annotation.Referenced;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

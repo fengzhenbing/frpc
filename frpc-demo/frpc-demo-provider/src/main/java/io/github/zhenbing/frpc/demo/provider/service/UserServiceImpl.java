@@ -1,8 +1,8 @@
 package io.github.zhenbing.frpc.demo.provider.service;
 
+import io.github.zhenbing.frpc.core.annotation.Service;
 import io.github.zhenbing.frpc.demo.api.User;
 import io.github.zhenbing.frpc.demo.api.UserService;
-import io.github.zhenbing.frpc.annotation.Service;
 import lombok.extern.slf4j.Slf4j;
 
 /**

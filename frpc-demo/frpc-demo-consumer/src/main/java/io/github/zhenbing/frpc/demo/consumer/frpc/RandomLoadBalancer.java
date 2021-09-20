@@ -1,7 +1,7 @@
 package io.github.zhenbing.frpc.demo.consumer.frpc;
 
+import io.github.zhenbing.frpc.core.api.LoadBalancer;
 import lombok.extern.slf4j.Slf4j;
-import io.github.zhenbing.frpc.api.LoadBalancer;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package io.github.zhenbing.frpc.demo.provider.frpc;
 
-import io.github.zhenbing.frpc.api.FrpcResolver;
+import io.github.zhenbing.frpc.core.api.FrpcResolver;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

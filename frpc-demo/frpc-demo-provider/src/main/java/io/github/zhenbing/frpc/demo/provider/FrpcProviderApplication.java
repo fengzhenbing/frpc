@@ -1,12 +1,12 @@
 package io.github.zhenbing.frpc.demo.provider;
 
 
-import io.github.zhenbing.frpc.api.FrpcResponse;
-import io.github.zhenbing.frpc.annotation.EnableFrpc;
-import io.github.zhenbing.frpc.api.FrpcRequest;
-import io.github.zhenbing.frpc.api.FrpcResolver;
+import io.github.zhenbing.frpc.core.api.FrpcResponse;
+import io.github.zhenbing.frpc.core.annotation.EnableFrpc;
+import io.github.zhenbing.frpc.core.api.FrpcRequest;
+import io.github.zhenbing.frpc.core.api.FrpcResolver;
+import io.github.zhenbing.frpc.core.server.FrpcInvoker;
 import io.github.zhenbing.frpc.demo.provider.frpc.SpringContextFrpcResolver;
-import io.github.zhenbing.frpc.server.FrpcInvoker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
