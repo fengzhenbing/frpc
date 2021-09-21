@@ -167,6 +167,7 @@ public class RepositoryConsumerZookeeper implements RepositoryConsumer {
             ServiceDesc serviceInfo = JSON.parseObject(data, ServiceDesc.class);
             desc.setServiceInterfaceClass(serviceInfo.getServiceInterfaceClass());
             desc.setServiceImplClass(serviceInfo.getServiceImplClass());
+            desc.setWeight(serviceInfo.getWeight());
         } catch (Exception ex) {
             ex.printStackTrace();
         }

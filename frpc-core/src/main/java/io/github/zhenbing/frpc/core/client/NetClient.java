@@ -1,7 +1,7 @@
 package io.github.zhenbing.frpc.core.client;
 
-import io.github.zhenbing.frpc.core.api.FrpcRequest;
-import io.github.zhenbing.frpc.core.api.FrpcResponse;
+import io.github.zhenbing.frpc.core.spi.FrpcRequest;
+import io.github.zhenbing.frpc.core.spi.FrpcResponse;
 
 import java.io.IOException;
 

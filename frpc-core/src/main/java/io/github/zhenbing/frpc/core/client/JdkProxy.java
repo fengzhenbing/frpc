@@ -2,9 +2,9 @@ package io.github.zhenbing.frpc.core.client;
 
 import com.alibaba.fastjson.JSON;
 import io.github.zhenbing.frpc.core.annotation.ReferencedDesc;
-import io.github.zhenbing.frpc.core.api.Filter;
-import io.github.zhenbing.frpc.core.api.FrpcRequest;
-import io.github.zhenbing.frpc.core.api.FrpcResponse;
+import io.github.zhenbing.frpc.core.spi.Filter;
+import io.github.zhenbing.frpc.core.spi.FrpcRequest;
+import io.github.zhenbing.frpc.core.spi.FrpcResponse;
 import io.github.zhenbing.frpc.repository.common.ServiceDesc;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.OrderComparator;

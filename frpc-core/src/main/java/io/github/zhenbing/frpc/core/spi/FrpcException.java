@@ -1,4 +1,4 @@
-package io.github.zhenbing.frpc.core.api;
+package io.github.zhenbing.frpc.core.spi;
 
 /**
  * FrpcException

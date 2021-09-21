@@ -1,12 +1,12 @@
 package io.github.zhenbing.frpc.core.client;
 
 import com.alibaba.fastjson.JSON;
-import io.github.zhenbing.frpc.core.api.FrpcResponse;
+import io.github.zhenbing.frpc.core.spi.FrpcResponse;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import io.github.zhenbing.frpc.core.api.FrpcRequest;
+import io.github.zhenbing.frpc.core.spi.FrpcRequest;
 
 import java.io.IOException;
 

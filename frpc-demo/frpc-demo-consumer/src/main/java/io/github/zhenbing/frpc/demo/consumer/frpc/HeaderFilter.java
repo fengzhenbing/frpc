@@ -1,7 +1,7 @@
 package io.github.zhenbing.frpc.demo.consumer.frpc;
 
-import io.github.zhenbing.frpc.core.api.Filter;
-import io.github.zhenbing.frpc.core.api.FrpcRequest;
+import io.github.zhenbing.frpc.core.spi.Filter;
+import io.github.zhenbing.frpc.core.spi.FrpcRequest;
 import org.springframework.stereotype.Component;
 
 /**

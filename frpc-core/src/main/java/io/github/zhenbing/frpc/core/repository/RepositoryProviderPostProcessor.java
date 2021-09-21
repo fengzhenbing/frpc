@@ -49,6 +49,7 @@ public class RepositoryProviderPostProcessor implements InitializingBean, BeanPo
             ServiceDesc serviceDesc = ServiceDesc.builder()
                     .host(serviceHost)
                     .port(providerConfig.getPort())
+                    .weight(50)
                     .serviceImplClass(bean.getClass().getName())
                     .serviceInterfaceClass(serviceInterfaceName).build();
             repositoryProvider.persist(serviceDesc);

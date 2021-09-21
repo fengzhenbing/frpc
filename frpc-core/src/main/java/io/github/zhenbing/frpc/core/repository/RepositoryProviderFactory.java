@@ -5,7 +5,6 @@ import io.github.zhenbing.frpc.repository.common.RepositoryConfig;
 import io.github.zhenbing.frpc.repository.provider.api.RepositoryProvider;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**

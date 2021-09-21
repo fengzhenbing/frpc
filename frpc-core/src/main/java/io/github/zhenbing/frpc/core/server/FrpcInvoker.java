@@ -1,10 +1,10 @@
 package io.github.zhenbing.frpc.core.server;
 
 import com.alibaba.fastjson.JSON;
-import io.github.zhenbing.frpc.core.api.FrpcException;
-import io.github.zhenbing.frpc.core.api.FrpcRequest;
-import io.github.zhenbing.frpc.core.api.FrpcResolver;
-import io.github.zhenbing.frpc.core.api.FrpcResponse;
+import io.github.zhenbing.frpc.core.spi.FrpcException;
+import io.github.zhenbing.frpc.core.spi.FrpcRequest;
+import io.github.zhenbing.frpc.core.spi.FrpcResolver;
+import io.github.zhenbing.frpc.core.spi.FrpcResponse;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

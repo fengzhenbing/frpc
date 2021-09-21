@@ -21,6 +21,11 @@ public class ServiceDesc {
 
     private String version;
 
+    /**
+     * 权重：负载时用
+     */
+    private Integer weight = 50;
+
     public String httpUrl() {
         return "http://" + host + ":" + port;
     }
