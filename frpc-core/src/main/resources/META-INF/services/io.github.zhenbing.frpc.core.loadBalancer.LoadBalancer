@@ -1,1 +1,2 @@
 io.github.zhenbing.frpc.core.loadBalancer.algorithm.RandomLoadBalancer
+io.github.zhenbing.frpc.core.loadBalancer.algorithm.RoundRobinLoadBalancer
